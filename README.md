@@ -11,8 +11,6 @@ A PyTorch implementation of Deep Q-Network for reinforcement learning tasks.
 ├── main.py               # Main training/testing script
 ├── hyperparameters.yml   # Configuration parameters
 ├── env.yml               # Conda environment specification
-├── dqn_model.pth         # Trained PyTorch model weights
-└── dqn_sb3_model.zip     # Stable Baselines3 model (for comparison)
 ```
 
 ## Features
