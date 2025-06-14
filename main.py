@@ -23,7 +23,7 @@ def main():
     
     if args.use_baselines:
         print("Using Stable Baselines3 for testing...")
-        model = sb3.DQN("MlpPolicy", env, verbose=1, learning_rate=hyp["learning_rate"], gamma=hyp["gamma"])
+        model = sb3.DQN("MlpPolicy", env, verbose=1)
         model.learn(total_timesteps=hyp["max_steps"])
         model.save("dqn_sb3_model")
         
