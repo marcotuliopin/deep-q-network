@@ -69,8 +69,9 @@ def main():
         return
 
     dqn_policy.load("dqn_model.pth")
-    agent.test(episodes=10)
+    mean_reward, std_reward = agent.test(episodes=100)
     env.close()
+    print(f"Mean reward: {mean_reward} +/- {std_reward}")
 
 
 if __name__ == "__main__":

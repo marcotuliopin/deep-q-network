@@ -63,6 +63,8 @@ class DQN:
         loss.backward()
         self.optimizer.step()
 
+        return loss.item()
+
     def load(self, fname):
         self.qnet.load_state_dict(torch.load(fname, map_location=self.device))
         self.target_qnet.load_state_dict(self.qnet.state_dict())
