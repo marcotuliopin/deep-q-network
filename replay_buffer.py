@@ -12,7 +12,6 @@ class ReplayBuffer:
         self.position = 0
 
     def remember(self, experience):
-
         if len(self.buffer) < self.capacity:
             self.buffer.append(experience)
         else:
