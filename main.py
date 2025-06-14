@@ -17,14 +17,11 @@ def main():
     # Device setup
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
-
-    with open("hyperparameters.yml", "r") as file:
-        hyp = yaml.safe_load(file)
     
     if args.use_baselines:
         print("Using Stable Baselines3 for testing...")
         model = sb3.DQN("MlpPolicy", env, verbose=1)
-        model.learn(total_timesteps=hyp["max_steps"])
+        model.learn(total_timesteps=args.max_steps)
         model.save("dqn_sb3_model")
         
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
@@ -48,18 +45,18 @@ def main():
         state_size=state_size,
         action_size=action_size,
         device=device,
-        learning_rate=hyp["learning_rate"],
-        gamma=hyp["gamma"],
-        replay_buffer_capacity=hyp["replay_buffer_capacity"]
+        learning_rate=args.learning_rate,
+        gamma=args.gamma,
+        replay_buffer_capacity=args.replay_buffer_capacity
     )
 
     agent = Agent(
         env=env, 
         policy=dqn_policy, 
-        epsilon=hyp["epsilon"], 
-        epsilon_decay=hyp["epsilon_decay"], 
-        epsilon_min=hyp["epsilon_min"], 
-        target_update_freq=hyp["target_update_frequency"]
+        epsilon=args.epsilon, 
+        epsilon_decay=args.epsilon_decay, 
+        epsilon_min=args.epsilon_min, 
+        target_update_freq=args.target_update_frequency
     )
 
     if not args.test:
@@ -74,11 +71,30 @@ def main():
     print(f"Mean reward: {mean_reward} +/- {std_reward}")
 
 
+def load_hyperparameters(file_path):
+    with open(file_path, "r") as file:
+        return yaml.safe_load(file)
+
+
 if __name__ == "__main__":
+    hyp = load_hyperparameters("hyperparameters.yml")
+
     parser = argparse.ArgumentParser()
+
     parser.add_argument("--test", action="store_true", help="Run in test mode")
     parser.add_argument("--human", action="store_true", help="Run in human mode")
     parser.add_argument("--use-baselines", action="store_true", help="Use Stable Baselines3 for testing")
+
+    parser.add_argument("--learning-rate", type=float, default=hyp["learning_rate"], help="Learning rate for the DQN agent")
+    parser.add_argument("--gamma", type=float, default=hyp["gamma"], help="Discount factor for the DQN agent")
+    parser.add_argument("--epsilon", type=float, default=hyp["epsilon"], help="Initial epsilon for the DQN agent")
+    parser.add_argument("--epsilon-decay", type=float, default=hyp["epsilon_decay"], help="Epsilon decay rate for the DQN agent")
+    parser.add_argument("--epsilon-min", type=float, default=hyp["epsilon_min"], help="Minimum epsilon for the DQN agent")
+    parser.add_argument("--target-update-frequency", type=int, default=hyp["target_update_frequency"], help="Target network update frequency")
+    parser.add_argument("--replay-buffer-capacity", type=int, default=hyp["replay_buffer_capacity"], help="Replay buffer capacity for the DQN agent")
+    parser.add_argument("--max-steps", type=int, default=hyp["max_steps"], help="Maximum number of steps for training")
+    parser.add_argument("--batch-size", type=int, default=hyp["batch_size"], help="Batch size for training")
+
     args = parser.parse_args()
 
     main()
