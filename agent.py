@@ -1,3 +1,5 @@
+import os
+import csv
 import time
 import numpy as np
 from tqdm import tqdm
@@ -12,6 +14,7 @@ class Agent:
         epsilon_decay=0.995,
         epsilon_min=0.01,
         target_update_freq=10,
+        run_name="default_name",
     ):
         self.env = env
         self.policy = policy
@@ -20,14 +23,24 @@ class Agent:
         self.epsilon_min = epsilon_min
         self.target_update_freq = target_update_freq
 
+        self.run_name = f"{run_name}".replace('.', '')
+
+
     def train(self, max_steps: int, batch_size: int):
         steps = 0
         rewards = []
         episode = 0
         start_time = time.time()
-        log_time = time.time() # For timing logs
+        log_time = time.time()
         n_updates = 0
         losses = []
+
+        # Criar pasta e arquivo CSV para salvar os resultados
+        os.makedirs("resultados", exist_ok=True)
+        log_path = os.path.join("resultados", f"train_log_{self.run_name}.csv")
+        with open(log_path, mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["episode", "reward", "length", "epsilon", "mean_loss", "steps"])
 
         while steps < max_steps:
             state, _ = self.env.reset()
@@ -71,6 +84,11 @@ class Agent:
             mean_loss = 0.0 if not losses else np.mean(losses[-100:])
             fps = steps / (time.time() - start_time)
 
+            # Salvar log no CSV
+            with open(log_path, mode="a", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow([episode, total_reward, episode_length, self.epsilon, mean_loss, steps])
+
             # Print log every 2 seconds or at the end of training
             if time.time() - log_time > 2 or steps >= max_steps:
                 self._print_log(
@@ -80,15 +98,19 @@ class Agent:
                     episode_length=episode_length,
                     epsilon=self.epsilon,
                     loss=mean_loss,
-                    learning_rate=self.policy.optimizer.param_groups[0]['lr'], 
+                    learning_rate=self.policy.optimizer.param_groups[0]['lr'],
                     n_updates=n_updates,
                     fps=int(fps),
                     time_elapsed=time.time() - start_time
                 )
                 log_time = time.time()
 
-        self.policy.save("dqn_model.pth")
+        #self.policy.save("dqn_model.pth")
+        model_path = os.path.join("resultados", f"dqn_model_{self.run_name}.pth")
+        self.policy.save(model_path)
+
         return np.mean(rewards), np.std(rewards)
+
 
     def test(self, episodes):
         rewards = []

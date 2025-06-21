@@ -51,12 +51,13 @@ def main():
     )
 
     agent = Agent(
-        env=env, 
-        policy=dqn_policy, 
-        epsilon=args.epsilon, 
-        epsilon_decay=args.epsilon_decay, 
-        epsilon_min=args.epsilon_min, 
-        target_update_freq=args.target_update_frequency
+        env=env,
+        policy=dqn_policy,
+        epsilon=args.epsilon,
+        epsilon_decay=args.epsilon_decay,
+        epsilon_min=args.epsilon_min,
+        target_update_freq=args.target_update_frequency,
+        run_name=args.run_name
     )
 
     if not args.test:
@@ -84,6 +85,8 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true", help="Run in test mode")
     parser.add_argument("--human", action="store_true", help="Run in human mode")
     parser.add_argument("--use-baselines", action="store_true", help="Use Stable Baselines3 for testing")
+    parser.add_argument("--run-name", type=str, default="default", help="Nome base para salvar resultados")
+
 
     parser.add_argument("--learning-rate", type=float, default=hyp["learning_rate"], help="Learning rate for the DQN agent")
     parser.add_argument("--gamma", type=float, default=hyp["gamma"], help="Discount factor for the DQN agent")
