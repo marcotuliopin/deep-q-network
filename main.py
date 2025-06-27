@@ -1,3 +1,4 @@
+import os
 import torch
 import argparse
 import yaml
@@ -19,13 +20,36 @@ def main():
     print(f"Using device: {device}")
     
     if args.use_baselines:
-        print("Using Stable Baselines3 for testing...")
-        model = sb3.DQN("MlpPolicy", env, verbose=1)
+        print("Using Stable Baselines3 for training...")
+
+        model = sb3.DQN(
+            "MlpPolicy",
+            env,
+            learning_rate=args.learning_rate,
+            gamma=args.gamma,
+            buffer_size=args.replay_buffer_capacity,
+            batch_size=args.batch_size,
+            target_update_interval=args.target_update_frequency,
+            exploration_initial_eps=args.epsilon,
+            exploration_final_eps=args.epsilon_min,
+            verbose=1
+        )
+
         model.learn(total_timesteps=args.max_steps)
-        model.save("dqn_sb3_model")
-        
+
+        # Salvar modelo
+        model_path = f"resultados/dqn_sb3_model_{args.run_name}.zip"
+        model.save(model_path)
+        print(f"Modelo SB3 salvo em: {model_path}")
+
+        # Avaliação
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
-        print(f"Mean reward: {mean_reward} +/- {std_reward}")
+        print(f"Mean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
+
+        # Registro de resultados
+        os.makedirs("./resultados", exist_ok=True)
+        with open("./resultados/test_results.txt", "a") as f:
+            f.write(f"{args.run_name} [SB3]: Mean reward: {mean_reward:.2f} +/- {std_reward:.2f}\n\n")
 
         if args.human:
             obs, _ = env.reset()
@@ -36,7 +60,7 @@ def main():
                 done = terminated or truncated
                 env.render()
 
-            env.close()
+        env.close()
         return
 
     print("Using custom DQN implementation...")
@@ -66,10 +90,18 @@ def main():
         print(f"Mean reward: {mean_reward} +/- {std_reward}")
         return
 
-    dqn_policy.load("dqn_model.pth")
+    if args.load_model_path:
+        print(f"Carregando modelo de {args.load_model_path}")
+        try:
+            dqn_policy.load(args.load_model_path)
+        except Exception as e:
+            print(f"Erro ao carregar modelo: {e}")
+            exit(1)
     mean_reward, std_reward = agent.test(episodes=100)
     env.close()
     print(f"Mean reward: {mean_reward} +/- {std_reward}")
+    with open(f"./resultados/test_results.txt", "a") as f:
+        f.write(f"{args.run_name}: Mean reward: {mean_reward} +/- {std_reward}\n\n")
 
 
 def load_hyperparameters(file_path):
@@ -85,7 +117,10 @@ if __name__ == "__main__":
     parser.add_argument("--test", action="store_true", help="Run in test mode")
     parser.add_argument("--human", action="store_true", help="Run in human mode")
     parser.add_argument("--use-baselines", action="store_true", help="Use Stable Baselines3 for testing")
-    parser.add_argument("--run-name", type=str, default="default", help="Nome base para salvar resultados")
+    parser.add_argument("--run_name", type=str, default="nome_padrao", help="Nome base para salvar resultados")
+    parser.add_argument("--load-model-path", type=str, default=None,
+                    help="Caminho para um modelo .pth existente a ser carregado antes do treinamento.")
+
 
 
     parser.add_argument("--learning-rate", type=float, default=hyp["learning_rate"], help="Learning rate for the DQN agent")

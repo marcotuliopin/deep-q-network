@@ -1,0 +1,58 @@
+sb3_default [SB3]: Mean reward: 173.76 +/- 75.47
+
+sb3_lr0005 [SB3]: Mean reward: 14.01 +/- 114.27
+
+sb3_lr005 [SB3]: Mean reward: 106.97 +/- 102.78
+
+sb3_gamma095 [SB3]: Mean reward: -66.25 +/- 57.45
+
+sb3_gamma0999 [SB3]: Mean reward: -751.88 +/- 317.29
+
+sb3_buffer10k [SB3]: Mean reward: -84.36 +/- 57.51
+
+sb3_buffer100k [SB3]: Mean reward: 111.19 +/- 102.14
+
+sb3_batch32 [SB3]: Mean reward: -6.06 +/- 27.19
+
+sb3_batch128 [SB3]: Mean reward: -8.01 +/- 25.49
+
+sb3_target10 [SB3]: Mean reward: 126.13 +/- 97.50
+
+sb3_target500 [SB3]: Mean reward: 138.20 +/- 101.89
+
+default: Mean reward: 168.99884993743112 +/- 112.49492741213005
+
+lr0005: Mean reward: 213.4849112464871 +/- 89.08490948853886
+
+lr005: Mean reward: -1078.399163556026 +/- 297.6082769146832
+
+gamma095: Mean reward: -79.74925451322947 +/- 36.228326098767845
+
+gamma0999: Mean reward: -8531.73958451709 +/- 3056.131283383315
+
+eps05: Mean reward: 173.50109024320668 +/- 118.96285533015971
+
+eps09: Mean reward: 60.492741768265006 +/- 190.85367413019696
+
+decay099: Mean reward: 148.17398181008312 +/- 128.481009181219
+
+decay098: Mean reward: 132.35314889592325 +/- 117.88238762818992
+
+epsmin005: Mean reward: 260.29691292391306 +/- 47.676813315878285
+
+epsmin0001: Mean reward: 205.7017240175602 +/- 134.2031888841471
+
+buffer10k: Mean reward: 131.92604187880636 +/- 132.29029901291187
+
+buffer100k: Mean reward: 186.50373339196997 +/- 126.18095889050163
+
+batch32: Mean reward: 233.09272661923896 +/- 44.534535663836586
+
+batch128: Mean reward: 232.77780063366836 +/- 83.5254406293501
+
+target10: Mean reward: 76.68122722238209 +/- 170.11524541056494
+
+target500: Mean reward: -26.669376459004226 +/- 18.756850642209507
+
+best_combo: Mean reward: 181.1349716114929 +/- 96.26194350692795
+

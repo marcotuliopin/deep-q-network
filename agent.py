@@ -64,7 +64,6 @@ class Agent:
                 total_reward += reward
                 steps += 1
                 episode_length += 1
-                rewards.append(reward)
 
                 # Learn from the replay buffer
                 if len(self.policy.replay_buffer) > batch_size:
@@ -104,7 +103,7 @@ class Agent:
                     time_elapsed=time.time() - start_time
                 )
                 log_time = time.time()
-
+        rewards.append(total_reward)
         #self.policy.save("dqn_model.pth")
         model_path = os.path.join("resultados", f"dqn_model_{self.run_name}.pth")
         self.policy.save(model_path)
@@ -125,8 +124,7 @@ class Agent:
                 done = terminated or truncated
                 state = next_state
                 total_reward += reward
-                rewards.append(reward)
-
+            rewards.append(total_reward)
             print(f"Test Episode {episode + 1}/{episodes}, Total Reward: {total_reward}")
         return np.mean(rewards), np.std(rewards)
     
